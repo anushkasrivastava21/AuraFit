@@ -1,0 +1,1809 @@
+﻿âœ¦ STYLEAI âœ¦
+Member 4 â€” Major Backend
+COMPLETE BEGINNER-FRIENDLY TASK GUIDE
+Database  â€¢  Authentication  â€¢  API Endpoints  â€¢  Security  â€¢  Deployment
+Role
+Major Backend (Database, Auth, Server, Infrastructure)
+Platform
+Node.js + Express.js + PostgreSQL + Redis
+Deployment
+Railway (backend) + Vercel (frontend, handled by M1)
+Total Tasks
+45 detailed tasks across 6 phases
+Profile Update
+age field added to user_profiles table
+Table of Contents
+How to Use This Guide
+Every task in this document follows the same format:
+Orange header bar
+The task number and name
+GREY 'WHY' row
+Explains why this task matters â€” read this before starting
+Numbered steps
+Exact, ordered steps to complete the task â€” follow them top to bottom
+Code blocks (grey box)
+Copy these exactly â€” code that needs to go in a file
+âœ“ Expected result
+What you should see when the step works correctly
+TIP / NOTE / IMPORTANT / COMMON MISTAKE boxes
+Extra guidance â€” read these carefully
+[ ] DONE WHEN row (green)
+The checklist item â€” tick this off when complete
+IMPORTANT: 
+Never skip a task and jump ahead. Each task builds on the previous one. If something is not working, do not move forward â€” fix it first, or ask your team for help.
+TIP: 
+Keep a terminal window open at all times. Most steps require you to type commands. On Windows, use PowerShell or Git Bash. On Mac/Linux, use Terminal.
+PHASE 0 â€” Environment & Project Setup
+Phase 0: Set Up Your Development Environment
+Before you write any project code, your computer needs the right software installed. This phase takes about 1â€“2 hours. Do it before the hackathon.
+1
+Install Node.js (the JavaScript runtime for your backend)
+WHY
+Your backend code runs on Node.js. Without it, you cannot run any JavaScript outside of a browser. npm (Node Package Manager) comes with Node.js and is how you install libraries.
+1
+  Step 1: Download Node.js
+  Go to https://nodejs.org â€” download the LTS version (the one that says 'Recommended For Most Users').
+2
+  Step 2: Install it
+  Run the installer. Accept all defaults. It will install both Node.js and npm.
+3
+  Step 3: Verify installation
+  Open a new terminal window and type these two commands:
+  node --version
+  npm --version
+  âœ“ Expected result: You should see version numbers like v20.x.x and 10.x.x. If you see 'command not found', restart your computer and try again.
+[ ]
+DONE WHEN: Running node --version shows a version number (v18 or higher).
+2
+Install Docker Desktop (runs your database and Redis in containers)
+WHY
+Instead of installing PostgreSQL and Redis directly on your computer (which is complicated), we use Docker. Docker runs them in isolated 'containers' â€” like mini virtual machines. This keeps your computer clean and ensures everyone on the team has identical setups.
+1
+  Step 1: Download Docker Desktop
+  Go to https://docker.com/products/docker-desktop â€” download for your operating system (Windows or Mac).
+2
+  Step 2: Install and launch
+  Run the installer. After installation, open Docker Desktop. Wait for it to say 'Docker Desktop is running' in the bottom left corner.
+3
+  Step 3: Verify installation
+  In your terminal:
+  docker --version
+  docker compose version
+  âœ“ Expected result: You should see version numbers. If Docker Desktop is not running, these commands will fail.
+[ ]
+DONE WHEN: Running docker --version shows a version number and Docker Desktop shows the green 'running' indicator.
+3
+Install a database viewer (TablePlus â€” to see your database visually)
+WHY
+You will be writing SQL and creating tables. A database viewer lets you see your tables and data like a spreadsheet, which is essential for debugging. TablePlus is free and beginner-friendly.
+1
+  Step 1: Download TablePlus
+  Go to https://tableplus.com â€” download the free version for your OS.
+2
+  Step 2: Install it
+  Run the installer. You do not need to open it yet â€” you will connect it to your database in Phase 1.
+[ ]
+DONE WHEN: TablePlus is installed and appears in your applications.
+4
+Install VS Code and the essential extensions
+WHY
+VS Code is the code editor you will write all your backend code in. Extensions add features like automatic code formatting and error highlighting that save beginners a lot of time.
+1
+  Step 1: Download VS Code
+  Go to https://code.visualstudio.com â€” download and install.
+2
+  Step 2: Install these extensions
+  Open VS Code, click the Extensions icon on the left sidebar (looks like building blocks), and install each of these:
+  Prettier - Code formatter  (by Prettier)
+  ESLint  (by Microsoft)
+  REST Client  (by Huachao Mao)  â€” for testing your API
+  GitLens  (by GitKraken)
+  Thunder Client  (by Ranga Vadhineni)  â€” alternative API tester
+3
+  Step 3: Set Prettier as default formatter
+  Press Ctrl+Shift+P (Cmd+Shift+P on Mac), type 'Format Document With', select Prettier. Then go to File > Preferences > Settings, search 'format on save', and tick the checkbox.
+[ ]
+DONE WHEN: VS Code opens, and you can see your installed extensions in the sidebar.
+5
+Set up the backend project folder structure
+WHY
+Every file in your backend needs to be in the right place. A well-organized project is much easier to debug and build on. This structure is the standard for Express.js applications.
+1
+  Step 1: Clone the shared repo and navigate to the backend folder
+  In your terminal:
+  git clone https://github.com/YOUR-TEAM-REPO/styleai.git
+  cd styleai
+  cd backend
+2
+  Step 2: Initialize the Node project
+  This creates a package.json file that tracks your project and its dependencies:
+  npm init -y
+3
+  Step 3: Create the folder structure
+  Create all folders now â€” this is your project map:
+  mkdir config routes services middleware db scripts logs
+4
+  Step 4: Create the main entry file
+  Create a file called server.js in the backend root â€” this is where your server starts:
+  touch server.js          (Mac/Linux)
+  echo. > server.js        (Windows)
+5
+  Step 5: Verify the structure
+  Run ls (Mac/Linux) or dir (Windows) to confirm you see:
+  config/   routes/   services/   middleware/   db/   scripts/   logs/   server.js   package.json
+[ ]
+DONE WHEN: Running ls inside the backend folder shows all the above folders and files.
+6
+Install all backend npm packages
+WHY
+These are the libraries your backend depends on. Each one solves a specific problem so you do not have to write everything from scratch.
+1
+  Step 1: Install production dependencies
+  These are packages your server needs when running:
+  npm install express dotenv cors helmet morgan express-rate-limit express-validator
+  npm install pg ioredis bcryptjs jsonwebtoken multer sharp cloudinary
+  npm install @google/generative-ai axios winston uuid
+2
+  Step 2: Install development dependencies
+  These are only used during development (not in production):
+  npm install --save-dev nodemon jest supertest eslint prettier
+3
+  Step 3: Verify installation
+  Open package.json â€” you should see all packages listed under 'dependencies' and 'devDependencies'.
+  âœ“ Expected result: The node_modules folder is created and package.json lists all installed packages.
+[ ]
+DONE WHEN: Running npm install inside the backend folder completes without errors.
+IMPORTANT: 
+Never commit the node_modules folder to Git. Create a .gitignore file in your backend folder and add node_modules/ as the first line.
+7
+Create your .env file (secret configuration)
+WHY
+Your backend needs secret values like API keys and database passwords. These must NEVER be put directly in your code or committed to GitHub. The .env file holds them locally on your machine only.
+1
+  Step 1: Create the .env file
+  In your backend folder:
+  touch .env          (Mac/Linux)
+  echo. > .env        (Windows)
+2
+  Step 2: Add these variables to .env
+  Open the file in VS Code and paste this content (your team will fill in the real values):
+  # Server
+  PORT=5000
+  NODE_ENV=development
+  
+  # Database
+  DATABASE_URL=postgresql://styleai_user:password@localhost:5432/styleai_db
+  
+  # Redis
+  REDIS_URL=redis://localhost:6379
+  
+  # JWT Secrets  (make these long random strings â€” 32+ characters)
+  JWT_SECRET=replace_this_with_a_long_random_string_at_least_32_chars
+  JWT_REFRESH_SECRET=another_different_long_random_string_here
+  
+  # Cloudinary (image storage)
+  CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+  CLOUDINARY_API_KEY=your_cloudinary_api_key
+  CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+  
+  # Gemini AI  (Member 3 will use this)
+  GEMINI_API_KEY=your_gemini_api_key
+  
+  # Frontend URL  (for CORS)
+  FRONTEND_URL=http://localhost:5173
+3
+  Step 3: Add .env to .gitignore
+  Make sure .env is in your .gitignore file. Create .gitignore if it does not exist and add:
+  node_modules/
+  .env
+  logs/
+  *.log
+[ ]
+DONE WHEN: The .env file exists in the backend folder and is listed in .gitignore.
+COMMON MISTAKE: 
+If you accidentally commit your .env file to GitHub with real API keys inside, those keys must be immediately rotated/regenerated. This is a serious security issue.
+PHASE 1 â€” Database Design & Setup
+Phase 1: Database Design & Setup
+The database is the heart of your backend. It stores every piece of data â€” users, profiles, wardrobe items, outfits, everything. This phase creates all the database tables and a Docker environment to run PostgreSQL locally.
+8
+Write the Docker Compose file (starts PostgreSQL + Redis with one command)
+WHY
+Docker Compose lets you define and start multiple services (PostgreSQL database and Redis cache) with a single command. Without this, everyone on the team would need to install and configure databases differently on their own machines.
+1
+  Step 1: Create docker-compose.yml
+  In your backend root folder, create a file called docker-compose.yml and add this content exactly:
+  version: '3.8'
+  
+  services:
+    postgres:
+      image: postgres:16
+      container_name: styleai_postgres
+      restart: unless-stopped
+      environment:
+        POSTGRES_DB: styleai_db
+        POSTGRES_USER: styleai_user
+        POSTGRES_PASSWORD: password
+      ports:
+        - '5432:5432'
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+  
+    redis:
+      image: redis:7-alpine
+      container_name: styleai_redis
+      restart: unless-stopped
+      ports:
+        - '6379:6379'
+  
+  volumes:
+    postgres_data:
+2
+  Step 2: Start the containers
+  Run this command in the backend folder â€” Docker Desktop must be running:
+  docker compose up -d
+3
+  Step 3: Verify both containers are running
+  Run:
+  docker compose ps
+  âœ“ Expected result: You should see both styleai_postgres and styleai_redis listed with status 'running'.
+[ ]
+DONE WHEN: docker compose ps shows both containers with status 'running'.
+TIP: 
+The -d flag means 'detached mode' â€” the containers run in the background. To stop them: docker compose down. To see their logs: docker compose logs postgres.
+9
+Connect TablePlus to your local PostgreSQL database
+WHY
+TablePlus gives you a visual view of your database so you can inspect tables, run queries, and verify your migrations worked correctly. This is essential for debugging.
+1
+  Step 1: Open TablePlus and create a new connection
+  Click the + button, select PostgreSQL.
+2
+  Step 2: Fill in the connection details
+  Enter these values exactly:
+  Name:      StyleAI Local
+  Host:      127.0.0.1
+  Port:      5432
+  User:      styleai_user
+  Password:  password
+  Database:  styleai_db
+3
+  Step 3: Test the connection
+  Click 'Test' at the bottom of the connection dialog.
+  âœ“ Expected result: You should see a green checkmark and the message 'Connected'.
+4
+  Step 4: Save and open the connection
+  Click 'Save', then double-click the connection to open it. You should see an empty database with no tables yet.
+[ ]
+DONE WHEN: TablePlus opens a connection to styleai_db and shows the database (empty at this point).
+10
+Set up the database connection in Node.js
+WHY
+Your Express.js server needs to be able to talk to PostgreSQL. This creates a 'connection pool' â€” a set of reusable database connections that the server shares instead of opening a new connection for every request (which would be very slow).
+1
+  Step 1: Create the database config file
+  Create db/pool.js and add this content:
+  const { Pool } = require('pg');
+  require('dotenv').config();
+  
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    max: 20,                 // maximum 20 simultaneous connections
+    idleTimeoutMillis: 30000, // close idle connections after 30 seconds
+    connectionTimeoutMillis: 2000, // fail if connection takes > 2 seconds
+  });
+  
+  // Test the connection when the app starts
+  pool.connect((err, client, release) => {
+    if (err) {
+      console.error('ERROR: Cannot connect to database:', err.message);
+      process.exit(1); // stop the server if DB is unreachable
+    } else {
+      console.log('SUCCESS: Connected to PostgreSQL database');
+      release();
+    }
+  });
+  
+  module.exports = pool;
+[ ]
+DONE WHEN: No errors when this file is required by server.js â€” the pool connects successfully.
+11
+Write Migration 1 â€” Create the users table
+WHY
+A 'migration' is a SQL file that creates or modifies database tables. We number them (001, 002, etc.) so they always run in the right order. The users table is the foundation â€” every other table connects back to it.
+1
+  Step 1: Create the migrations folder
+  Inside the db/ folder:
+  mkdir db/migrations
+2
+  Step 2: Create the migration file
+  Create db/migrations/001_create_users.sql:
+  -- Migration 001: Create users table
+  -- The users table stores login credentials only
+  -- Personal info goes in user_profiles (next migration)
+  
+  CREATE EXTENSION IF NOT EXISTS 'pgcrypto';  -- enables gen_random_uuid()
+  
+  CREATE TABLE IF NOT EXISTS users (
+    id             UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
+    email          VARCHAR(255) NOT NULL UNIQUE,
+    password_hash  TEXT         NOT NULL,
+    created_at     TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    last_active    TIMESTAMPTZ,
+    is_deleted     BOOLEAN      NOT NULL DEFAULT FALSE
+  );
+  
+  -- Index on email so login lookups are fast
+  CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
+3
+  Step 3: Run the migration in TablePlus
+  Open TablePlus, click the SQL editor icon, paste the SQL, and click 'Run'. Then refresh the left panel.
+4
+  Step 4: Verify the table was created
+  In TablePlus, expand your database â€” you should now see a 'users' table. Click it and you will see the columns.
+  âœ“ Expected result: The users table appears in TablePlus with the correct columns.
+[ ]
+DONE WHEN: The users table is visible in TablePlus with all columns created.
+12
+Write Migration 2 â€” Create the user_profiles table (includes age)
+WHY
+The user_profiles table stores all personal and AI-analyzed information about the user. It is separate from users so the login system stays clean. The age field is stored here as a small integer (0â€“120).
+1
+  Step 1: Create the file
+  Create db/migrations/002_create_user_profiles.sql:
+  -- Migration 002: Create user_profiles table
+  -- Stores personal info + AI-analyzed physical attributes
+  -- age is included here (integer, validated 0-120)
+  
+  CREATE TABLE IF NOT EXISTS user_profiles (
+    user_id          UUID         PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    name             VARCHAR(100),
+    age              SMALLINT     CHECK (age >= 0 AND age <= 120),
+    gender_identity  VARCHAR(50),
+    pronouns         VARCHAR(30),
+  
+    -- AI-detected physical attributes (from selfie analysis)
+    skin_tone_hex    VARCHAR(7),   -- e.g. '#C68642'
+    fitzpatrick_scale VARCHAR(5),  -- I, II, III, IV, V, VI
+    body_type        VARCHAR(50),
+    face_shape       VARCHAR(50),
+    hair_color       VARCHAR(50),
+    hair_length      VARCHAR(30),
+  
+    -- Style preferences (stored as JSON arrays)
+    -- Example: ["Casual", "Streetwear", "Minimalist"]
+    style_prefs      JSONB         NOT NULL DEFAULT '[]',
+    occasions        JSONB         NOT NULL DEFAULT '[]',
+  
+    -- Shopping budget
+    budget_min       NUMERIC(8,2)  DEFAULT 0,
+    budget_max       NUMERIC(8,2)  DEFAULT 500,
+  
+    -- Selfie image URL (stored in Cloudinary)
+    selfie_url       TEXT,
+  
+    created_at       TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    updated_at       TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+  );
+  
+  -- Auto-update the updated_at timestamp whenever a row changes
+  CREATE OR REPLACE FUNCTION update_updated_at_column()
+  RETURNS TRIGGER AS $$
+  BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+  END;
+  $$ LANGUAGE plpgsql;
+  
+  CREATE TRIGGER trigger_user_profiles_updated_at
+    BEFORE UPDATE ON user_profiles
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+2
+  Step 2: Run in TablePlus
+  Paste into the SQL editor and run. Refresh to verify the user_profiles table appears.
+3
+  âœ“ Expected result: user_profiles table appears in TablePlus with the age column visible.
+[ ]
+DONE WHEN: The user_profiles table is visible in TablePlus. Click the 'age' column to confirm it exists with type SMALLINT.
+NOTE: 
+The age field uses SMALLINT (a small number, max 32767) instead of INT because ages will never be larger than 120. The CHECK constraint rejects impossible ages like -1 or 200.
+13
+Write Migration 3 â€” Create the wardrobe_items table
+WHY
+The wardrobe_items table stores every clothing item a user uploads. The JSONB type (JSON Binary) is used for ai_tags and color arrays because these are flexible, AI-generated data structures that are easier to store as JSON than as separate columns.
+1
+  Step 1: Create db/migrations/003_create_wardrobe_items.sql:
+  -- Migration 003: Create wardrobe_items table
+  
+  CREATE TYPE item_category AS ENUM (
+    'Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Footwear', 'Accessories'
+  );
+  
+  CREATE TYPE item_condition AS ENUM (
+    'New', 'Good', 'Worn', 'Needs Cleaning'
+  );
+  
+  CREATE TABLE IF NOT EXISTS wardrobe_items (
+    id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id         UUID          NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  
+    -- AI-detected metadata
+    category        item_category,
+    subcategory     VARCHAR(50),
+    color_primary   VARCHAR(7),    -- hex e.g. '#3A5FCD'
+    color_secondary JSONB          NOT NULL DEFAULT '[]', -- array of hex strings
+    pattern         VARCHAR(50),
+    formality_score SMALLINT       CHECK (formality_score BETWEEN 1 AND 5),
+    season          JSONB          NOT NULL DEFAULT '[]', -- ['Spring','Summer'] etc.
+    material        VARCHAR(60),
+    ai_tags         JSONB          NOT NULL DEFAULT '{}', -- full AI analysis result
+  
+    -- User-editable metadata
+    custom_name     VARCHAR(100),
+    brand           VARCHAR(80),
+    purchase_price  NUMERIC(8,2),
+    condition       item_condition DEFAULT 'Good',
+  
+    -- Image
+    image_url       TEXT          NOT NULL,
+    cloudinary_id   TEXT,          -- needed to delete from Cloudinary later
+  
+    -- Tracking
+    last_worn       DATE,
+    wear_count      INTEGER        NOT NULL DEFAULT 0,
+    is_deleted      BOOLEAN        NOT NULL DEFAULT FALSE,
+    created_at      TIMESTAMPTZ    NOT NULL DEFAULT NOW()
+  );
+  
+  CREATE INDEX IF NOT EXISTS idx_wardrobe_user ON wardrobe_items (user_id);
+  CREATE INDEX IF NOT EXISTS idx_wardrobe_user_cat ON wardrobe_items (user_id, category);
+  CREATE INDEX IF NOT EXISTS idx_wardrobe_last_worn ON wardrobe_items (user_id, last_worn);
+2
+  Step 2: Run in TablePlus and verify
+  âœ“ Expected result: The wardrobe_items table appears with all columns and the ENUM types are created.
+[ ]
+DONE WHEN: wardrobe_items table is visible in TablePlus with all columns including category, formality_score, and ai_tags.
+14
+Write Migration 4 â€” Create the outfits and saved_outfits tables
+WHY
+The outfits table stores every generated outfit (whether the user saved it or not). saved_outfits is a linking table that marks which outfits a user has specifically saved or favourited.
+1
+  Step 1: Create db/migrations/004_create_outfits.sql:
+  -- Migration 004: Create outfits and saved_outfits tables
+  
+  CREATE TYPE generation_method AS ENUM ('prompt', 'pick', 'surprise');
+  
+  CREATE TABLE IF NOT EXISTS outfits (
+    id                UUID              PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id           UUID              NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  
+    -- Which wardrobe items make up this outfit
+    item_ids          UUID[]            NOT NULL,  -- array of wardrobe_items.id
+  
+    -- How was it generated?
+    generation_method generation_method NOT NULL,
+    mood_tag          VARCHAR(60),       -- e.g. 'Date Night'
+  
+    -- User feedback
+    rating            SMALLINT          CHECK (rating BETWEEN 1 AND 5),
+    notes             TEXT,
+    worn_date         DATE,
+  
+    created_at        TIMESTAMPTZ       NOT NULL DEFAULT NOW()
+  );
+  
+  CREATE TABLE IF NOT EXISTS saved_outfits (
+    user_id      UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    outfit_id    UUID        NOT NULL REFERENCES outfits(id) ON DELETE CASCADE,
+    is_favourite BOOLEAN     NOT NULL DEFAULT FALSE,
+    nickname     VARCHAR(80),
+    saved_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  
+    PRIMARY KEY (user_id, outfit_id)  -- can't save the same outfit twice
+  );
+  
+  CREATE INDEX IF NOT EXISTS idx_outfits_user_date
+    ON outfits (user_id, worn_date DESC);
+  CREATE INDEX IF NOT EXISTS idx_outfits_user_method
+    ON outfits (user_id, generation_method);
+2
+  Step 2: Run in TablePlus and verify
+  âœ“ Expected result: Both outfits and saved_outfits tables appear in TablePlus.
+[ ]
+DONE WHEN: outfits and saved_outfits tables are visible in TablePlus.
+15
+Write Migration 5 â€” Create supporting tables
+WHY
+These tables support the Rate My Fit feature, shopping recommendations, and AI usage tracking. The gemini_usage table is especially important â€” it lets you monitor how many AI API calls you are making (and their cost).
+1
+  Step 1: Create db/migrations/005_create_supporting_tables.sql:
+  -- Migration 005: Supporting tables for external features
+  
+  CREATE TABLE IF NOT EXISTS rate_my_fit_logs (
+    id                  UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id             UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    input_url           TEXT,
+    compatibility_score INTEGER     CHECK (compatibility_score BETWEEN 0 AND 100),
+    rating_score        NUMERIC(3,1) CHECK (rating_score BETWEEN 0 AND 10),
+    ai_feedback         JSONB       NOT NULL DEFAULT '{}',
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  );
+  
+  CREATE TABLE IF NOT EXISTS shopping_recs (
+    id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id         UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    product_name    VARCHAR(200),
+    product_url     TEXT,
+    image_url       TEXT,
+    price           NUMERIC(8,2),
+    currency        VARCHAR(5)  DEFAULT 'USD',
+    reason_text     TEXT,
+    category        VARCHAR(50),
+    was_clicked     BOOLEAN     NOT NULL DEFAULT FALSE,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  );
+  
+  CREATE TABLE IF NOT EXISTS gemini_usage (
+    id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id         UUID        REFERENCES users(id) ON DELETE SET NULL,
+    endpoint        VARCHAR(80) NOT NULL,   -- e.g. 'selfie-analysis'
+    model           VARCHAR(60) NOT NULL,   -- e.g. 'gemini-1.5-flash'
+    prompt_tokens   INTEGER     NOT NULL DEFAULT 0,
+    response_tokens INTEGER     NOT NULL DEFAULT 0,
+    success         BOOLEAN     NOT NULL DEFAULT TRUE,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  );
+2
+  Step 2: Run in TablePlus and verify
+  âœ“ Expected result: All three tables appear in TablePlus.
+[ ]
+DONE WHEN: All 3 supporting tables are visible in TablePlus.
+16
+Write the migrations runner script
+WHY
+Right now you are running migrations manually in TablePlus. The runner script automates this â€” it reads all your .sql files and runs them in order automatically. This is critical for deployment (you cannot manually run SQL on a production server).
+1
+  Step 1: Create scripts/migrate.js:
+  const fs = require('fs');
+  const path = require('path');
+  const pool = require('../db/pool');
+  
+  async function runMigrations() {
+    const client = await pool.connect();
+  
+    try {
+      // Create a tracking table if it doesn't exist
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS schema_migrations (
+          filename   TEXT PRIMARY KEY,
+          applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+      `);
+  
+      // Get list of already-applied migrations
+      const result = await client.query(
+        'SELECT filename FROM schema_migrations ORDER BY filename'
+      );
+      const applied = new Set(result.rows.map(r => r.filename));
+  
+      // Read all .sql files in db/migrations/, sorted by name
+      const migrationsDir = path.join(__dirname, '../db/migrations');
+      const files = fs.readdirSync(migrationsDir)
+        .filter(f => f.endsWith('.sql'))
+        .sort();
+  
+      for (const file of files) {
+        if (applied.has(file)) {
+          console.log(`SKIP: ${file} (already applied)`);
+          continue;
+        }
+  
+        console.log(`RUNNING: ${file}...`);
+        const sql = fs.readFileSync(path.join(migrationsDir, file), 'utf8');
+  
+        await client.query('BEGIN');
+        await client.query(sql);
+        await client.query(
+          'INSERT INTO schema_migrations (filename) VALUES ($1)',
+          [file]
+        );
+        await client.query('COMMIT');
+        console.log(`DONE: ${file}`);
+      }
+  
+      console.log('All migrations complete!');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      console.error('Migration failed:', err.message);
+      process.exit(1);
+    } finally {
+      client.release();
+      pool.end();
+    }
+  }
+  
+  runMigrations();
+2
+  Step 2: Add the migrate script to package.json
+  Open package.json and add this inside the 'scripts' section:
+  "migrate": "node scripts/migrate.js"
+3
+  Step 3: Test it
+  Run:
+  npm run migrate
+  âœ“ Expected result: You should see 'RUNNING: 001_create_users.sql', 'DONE', and so on for each file, ending with 'All migrations complete!'.
+[ ]
+DONE WHEN: Running npm run migrate completes without errors and logs 'All migrations complete!'.
+17
+Write the seed script (test data)
+WHY
+A seed script creates fake test data in your database so the whole team can test features without manually typing data. It creates 3 test users with full profiles and sample wardrobe items.
+1
+  Step 1: Create scripts/seed.js:
+  const pool = require('../db/pool');
+  const bcrypt = require('bcryptjs');
+  
+  async function seed() {
+    const client = await pool.connect();
+    try {
+      console.log('Seeding database...');
+  
+      // Clear existing test data first
+      await client.query("DELETE FROM users WHERE email LIKE '%@test.styleai.com'");
+  
+      // Create 3 test users
+      const password = await bcrypt.hash('Password123!', 12);
+      const users = [
+        { email: 'aisha@test.styleai.com', name: 'Aisha', age: 24 },
+        { email: 'james@test.styleai.com', name: 'James', age: 31 },
+        { email: 'sofia@test.styleai.com', name: 'Sofia', age: 27 },
+      ];
+  
+      for (const u of users) {
+        const res = await client.query(
+          'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id',
+          [u.email, password]
+        );
+        const userId = res.rows[0].id;
+  
+        await client.query(
+          `INSERT INTO user_profiles
+            (user_id, name, age, style_prefs, budget_min, budget_max)
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          [userId, u.name, u.age, JSON.stringify(['Casual', 'Minimalist']), 20, 150]
+        );
+        console.log(`Created user: ${u.email}  (age: ${u.age})`);
+      }
+  
+      console.log('Seed complete! Test password for all users: Password123!');
+    } catch (err) {
+      console.error('Seed failed:', err.message);
+      process.exit(1);
+    } finally {
+      client.release();
+      pool.end();
+    }
+  }
+  
+  seed();
+2
+  Step 2: Add to package.json scripts:
+  "seed": "node scripts/seed.js"
+3
+  Step 3: Run the seed
+  npm run seed
+  âœ“ Expected result: Output shows 'Created user: aisha@test.styleai.com (age: 24)' etc. In TablePlus, click the users table and run SELECT * FROM users â€” you should see 3 rows.
+[ ]
+DONE WHEN: Running npm run seed creates 3 test users. Verified in TablePlus with SELECT * FROM users.
+PHASE 2 â€” Express Server & Authentication System
+Phase 2: Build the Express Server & Authentication
+Authentication is the system that lets users register, log in, and stay logged in securely. JWTs (JSON Web Tokens) are the keys your server issues â€” users present them with every request to prove who they are.
+18
+Build server.js (the main entry point for your Express app)
+WHY
+server.js is the file that starts everything. It creates the Express application, registers all middleware (security, logging, etc.), connects routes, and tells the server which port to listen on.
+1
+  Step 1: Open server.js and add this content:
+  require('dotenv').config();      // MUST be the very first line
+  const express = require('express');
+  const cors = require('cors');
+  const helmet = require('helmet');
+  const morgan = require('morgan');
+  const rateLimit = require('express-rate-limit');
+  
+  const app = express();
+  const PORT = process.env.PORT || 5000;
+  
+  // â”€â”€ SECURITY MIDDLEWARE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // helmet adds important security headers to every response
+  app.use(helmet());
+  
+  // cors controls which websites can call your API
+  app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    credentials: true,
+  }));
+  
+  // â”€â”€ LOGGING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // morgan logs every incoming request to the console
+  app.use(morgan('dev'));
+  
+  // â”€â”€ BODY PARSERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // These allow your routes to read the JSON body of requests
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ extended: true }));
+  
+  // â”€â”€ RATE LIMITING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Prevents abuse by limiting how many requests one IP can make
+  const generalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,  // 15 minutes
+    max: 100,                   // max 100 requests per 15 min
+    message: { error: 'Too many requests, please try again later.' }
+  });
+  app.use('/api/', generalLimiter);
+  
+  // â”€â”€ HEALTH CHECK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Simple endpoint to verify the server is alive
+  app.get('/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+  
+  // â”€â”€ ROUTES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // We'll import and add route files here in Phase 2 & 3
+  // app.use('/api/auth', require('./routes/auth'));
+  
+  // â”€â”€ GLOBAL ERROR HANDLER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // This catches any unhandled errors and returns a clean response
+  app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 500).json({
+      success: false,
+      error: { message: err.message || 'Internal server error' }
+    });
+  });
+  
+  // â”€â”€ START SERVER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+2
+  Step 2: Add the dev script to package.json:
+  "dev": "nodemon server.js"
+3
+  Step 3: Start the server
+  npm run dev
+  âœ“ Expected result: Console shows 'SUCCESS: Connected to PostgreSQL database' and 'Server running on http://localhost:5000'.
+4
+  Step 4: Test the health endpoint
+  Open your browser and visit http://localhost:5000/health
+  âœ“ Expected result: Browser shows: {"status":"ok","timestamp":"..."}.
+[ ]
+DONE WHEN: npm run dev starts without errors. http://localhost:5000/health returns a JSON response.
+19
+Build the AuthService (register, login, logout logic)
+WHY
+The AuthService is a module that handles all authentication logic. Keeping logic in a 'service' file (separate from the route handler) is good practice â€” routes should be thin (just handle HTTP), services should be fat (contain all the real logic).
+1
+  Step 1: Create services/authService.js:
+  const bcrypt = require('bcryptjs');
+  const jwt = require('jsonwebtoken');
+  const { v4: uuidv4 } = require('uuid');
+  const pool = require('../db/pool');
+  const redis = require('../config/redis');  // we'll create this next
+  
+  // â”€â”€ REGISTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  async function register(email, password) {
+    // 1. Check if email already exists
+    const existing = await pool.query(
+      'SELECT id FROM users WHERE email = $1',
+      [email.toLowerCase()]
+    );
+    if (existing.rows.length > 0) {
+      throw { status: 409, message: 'An account with this email already exists.' };
+    }
+  
+    // 2. Hash the password  (saltRounds:12 = strong but not too slow)
+    const password_hash = await bcrypt.hash(password, 12);
+  
+    // 3. Insert new user
+    const result = await pool.query(
+      'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, created_at',
+      [email.toLowerCase(), password_hash]
+    );
+    const user = result.rows[0];
+  
+    // 4. Create an empty profile row for this user
+    await pool.query(
+      'INSERT INTO user_profiles (user_id) VALUES ($1)',
+      [user.id]
+    );
+  
+    // 5. Return tokens
+    const tokens = generateTokens(user.id);
+    await storeRefreshToken(tokens.refreshToken, user.id);
+    return { user: { id: user.id, email: user.email }, ...tokens };
+  }
+  
+  // â”€â”€ LOGIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  async function login(email, password) {
+    // 1. Find user by email
+    const result = await pool.query(
+      'SELECT id, email, password_hash FROM users WHERE email = $1 AND is_deleted = FALSE',
+      [email.toLowerCase()]
+    );
+    if (result.rows.length === 0) {
+      throw { status: 401, message: 'Invalid email or password.' };
+    }
+    const user = result.rows[0];
+  
+    // 2. Compare submitted password with stored hash
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+    if (!isMatch) {
+      throw { status: 401, message: 'Invalid email or password.' };
+    }
+  
+    // 3. Update last_active timestamp
+    await pool.query('UPDATE users SET last_active = NOW() WHERE id = $1', [user.id]);
+  
+    // 4. Generate and store tokens
+    const tokens = generateTokens(user.id);
+    await storeRefreshToken(tokens.refreshToken, user.id);
+    return { user: { id: user.id, email: user.email }, ...tokens };
+  }
+  
+  // â”€â”€ LOGOUT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  async function logout(refreshToken) {
+    // Blacklist the refresh token so it cannot be used again
+    const tokenId = getTokenId(refreshToken);
+    if (tokenId) {
+      await redis.del(`refresh:${tokenId}`);
+    }
+  }
+  
+  // â”€â”€ REFRESH ACCESS TOKEN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  async function refreshAccessToken(refreshToken) {
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    } catch (err) {
+      throw { status: 401, message: 'Invalid or expired refresh token.' };
+    }
+  
+    // Check token is not blacklisted
+    const stored = await redis.get(`refresh:${decoded.jti}`);
+    if (!stored) {
+      throw { status: 401, message: 'Refresh token has been revoked.' };
+    }
+  
+    // Generate new access token
+    const accessToken = jwt.sign(
+      { sub: decoded.sub },
+      process.env.JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+    return { accessToken };
+  }
+  
+  // â”€â”€ HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  function generateTokens(userId) {
+    const jti = uuidv4();   // unique ID for this refresh token
+    const accessToken = jwt.sign(
+      { sub: userId },
+      process.env.JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+    const refreshToken = jwt.sign(
+      { sub: userId, jti },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: '7d' }
+    );
+    return { accessToken, refreshToken };
+  }
+  
+  async function storeRefreshToken(refreshToken, userId) {
+    const decoded = jwt.decode(refreshToken);
+    // Store in Redis for 7 days (same as token expiry)
+    await redis.setex(`refresh:${decoded.jti}`, 60 * 60 * 24 * 7, userId);
+  }
+  
+  function getTokenId(refreshToken) {
+    try {
+      return jwt.decode(refreshToken)?.jti;
+    } catch { return null; }
+  }
+  
+  module.exports = { register, login, logout, refreshAccessToken };
+[ ]
+DONE WHEN: The authService.js file is created without any syntax errors (you can run node services/authService.js and see no crash).
+20
+Set up the Redis connection
+WHY
+Redis is an in-memory database used to store refresh tokens (for login sessions) and cache AI results. You need a connection to it before the AuthService will work.
+1
+  Step 1: Create config/redis.js:
+  const Redis = require('ioredis');
+  require('dotenv').config();
+  
+  const redis = new Redis(process.env.REDIS_URL, {
+    retryStrategy(times) {
+      // Retry connecting up to 5 times, then give up
+      if (times > 5) return null;
+      return Math.min(times * 200, 1000); // wait 200ms, 400ms, ...
+    }
+  });
+  
+  redis.on('connect', () => console.log('SUCCESS: Connected to Redis'));
+  redis.on('error', (err) => console.error('Redis error:', err.message));
+  
+  module.exports = redis;
+2
+  Step 2: Add Redis connection to server.js
+  Add this near the top of server.js (after dotenv.config()):
+  require('./config/redis');  // starts the Redis connection
+3
+  Step 3: Restart the server and verify
+  âœ“ Expected result: Console now shows both 'SUCCESS: Connected to PostgreSQL database' AND 'SUCCESS: Connected to Redis'.
+[ ]
+DONE WHEN: Server starts and logs success messages for both PostgreSQL and Redis.
+21
+Build the auth middleware (JWT verification)
+WHY
+The auth middleware is a gatekeeper function that runs BEFORE your route handlers. It reads the JWT token from the request, verifies it is valid, and attaches the user's ID to the request so your routes know who is making the call.
+1
+  Step 1: Create middleware/authenticate.js:
+  const jwt = require('jsonwebtoken');
+  
+  function authenticate(req, res, next) {
+    // 1. Get the token from the Authorization header
+    // Format: 'Authorization: Bearer eyJhbGci...'
+    const authHeader = req.headers.authorization;
+  
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        error: { message: 'No token provided. Please log in.' }
+      });
+    }
+  
+    const token = authHeader.split(' ')[1];  // extract just the token part
+  
+    // 2. Verify the token using our secret
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.userId = decoded.sub;  // attach user ID to request
+      next();                    // token is valid, proceed to the route
+    } catch (err) {
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({
+          success: false,
+          error: { message: 'Session expired. Please log in again.' }
+        });
+      }
+      return res.status(401).json({
+        success: false,
+        error: { message: 'Invalid token. Please log in again.' }
+      });
+    }
+  }
+  
+  module.exports = authenticate;
+[ ]
+DONE WHEN: The middleware file is created. You can now import and use it in route files.
+22
+Build the auth routes
+WHY
+Route files connect HTTP endpoints (like POST /api/auth/register) to your service functions. Each route handler validates the input, calls the service, and returns a standardized response.
+1
+  Step 1: Create routes/auth.js:
+  const express = require('express');
+  const { body, validationResult } = require('express-validator');
+  const rateLimit = require('express-rate-limit');
+  const authService = require('../services/authService');
+  
+  const router = express.Router();
+  
+  // Stricter rate limit for auth routes (prevent brute force)
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    message: { error: 'Too many attempts. Try again in 15 minutes.' }
+  });
+  
+  // â”€â”€ POST /api/auth/register â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  router.post('/register', authLimiter, [
+    body('email').isEmail().normalizeEmail().withMessage('Please enter a valid email'),
+    body('password')
+      .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+      .matches(/[A-Z]/).withMessage('Password must contain an uppercase letter')
+      .matches(/[0-9]/).withMessage('Password must contain a number')
+  ], async (req, res, next) => {
+    // Check validation results
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, error: { message: 'Validation failed', errors: errors.array() } });
+    }
+  
+    try {
+      const result = await authService.register(req.body.email, req.body.password);
+      res.status(201).json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  });
+  
+  // â”€â”€ POST /api/auth/login â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  router.post('/login', authLimiter, [
+    body('email').isEmail().normalizeEmail(),
+    body('password').notEmpty()
+  ], async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, error: { message: 'Email and password are required.' } });
+    }
+  
+    try {
+      const result = await authService.login(req.body.email, req.body.password);
+      res.json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  });
+  
+  // â”€â”€ POST /api/auth/logout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  router.post('/logout', async (req, res, next) => {
+    try {
+      const { refreshToken } = req.body;
+      await authService.logout(refreshToken);
+      res.json({ success: true, data: { message: 'Logged out successfully.' } });
+    } catch (err) {
+      next(err);
+    }
+  });
+  
+  // â”€â”€ POST /api/auth/refresh â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  router.post('/refresh', async (req, res, next) => {
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) {
+        return res.status(400).json({ success: false, error: { message: 'Refresh token is required.' } });
+      }
+      const result = await authService.refreshAccessToken(refreshToken);
+      res.json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  });
+  
+  module.exports = router;
+2
+  Step 2: Register the auth routes in server.js
+  Find the commented-out routes section in server.js and uncomment/add:
+  app.use('/api/auth', require('./routes/auth'));
+3
+  Step 3: Test registration with Thunder Client
+  Open Thunder Client in VS Code. Create a POST request to http://localhost:5000/api/auth/register with body:
+  { "email": "testuser@example.com", "password": "TestPass123" }
+  âœ“ Expected result: Response: { "success": true, "data": { "user": {...}, "accessToken": "eyJ...", "refreshToken": "eyJ..." } }
+[ ]
+DONE WHEN: POST /api/auth/register returns a 201 response with an accessToken and refreshToken. POST /api/auth/login with the same credentials returns a 200 with tokens.
+PHASE 3 â€” Profile, Wardrobe & Outfit API Endpoints
+Phase 3: Build the Core API Endpoints
+Now that auth works, you will build the endpoints the frontend team needs to display and manage data. These endpoints are protected â€” they require a valid JWT access token.
+23
+Build the Profile endpoints (GET and PUT /api/profile)
+WHY
+These two endpoints let the frontend read and update user profile information, including the new age field. The GET endpoint joins the users and user_profiles tables to return everything in one response.
+1
+  Step 1: Create services/profileService.js:
+  const pool = require('../db/pool');
+  
+  // Get full profile (join users + user_profiles)
+  async function getProfile(userId) {
+    const result = await pool.query(`
+      SELECT
+        u.id, u.email, u.created_at,
+        p.name, p.age, p.gender_identity, p.pronouns,
+        p.skin_tone_hex, p.fitzpatrick_scale, p.body_type,
+        p.face_shape, p.hair_color, p.hair_length,
+        p.style_prefs, p.occasions,
+        p.budget_min, p.budget_max,
+        p.selfie_url, p.updated_at
+      FROM users u
+      LEFT JOIN user_profiles p ON u.id = p.user_id
+      WHERE u.id = $1 AND u.is_deleted = FALSE
+    `, [userId]);
+  
+    if (result.rows.length === 0) {
+      throw { status: 404, message: 'Profile not found.' };
+    }
+    return result.rows[0];
+  }
+  
+  // Update profile fields
+  async function updateProfile(userId, data) {
+    // Only allow safe fields to be updated (never let users change their user_id or email here)
+    const allowed = [
+      'name', 'age', 'gender_identity', 'pronouns',
+      'skin_tone_hex', 'fitzpatrick_scale', 'body_type',
+      'face_shape', 'hair_color', 'hair_length',
+      'style_prefs', 'occasions', 'budget_min', 'budget_max'
+    ];
+  
+    // Build a dynamic UPDATE query from provided fields
+    const updates = [];
+    const values = [];
+    let paramIndex = 1;
+  
+    for (const field of allowed) {
+      if (data[field] !== undefined) {
+        updates.push(`${field} = $${paramIndex}`);
+        values.push(data[field]);
+        paramIndex++;
+      }
+    }
+  
+    if (updates.length === 0) {
+      throw { status: 400, message: 'No valid fields provided to update.' };
+    }
+  
+    values.push(userId);
+    const query = `UPDATE user_profiles SET ${updates.join(', ')} WHERE user_id = $${paramIndex}`;
+    await pool.query(query, values);
+  
+    return getProfile(userId);   // return the updated profile
+  }
+  
+  module.exports = { getProfile, updateProfile };
+2
+  Step 2: Create routes/profile.js:
+  const express = require('express');
+  const { body, validationResult } = require('express-validator');
+  const authenticate = require('../middleware/authenticate');
+  const profileService = require('../services/profileService');
+  const router = express.Router();
+  
+  // All profile routes require authentication
+  router.use(authenticate);
+  
+  // GET /api/profile
+  router.get('/', async (req, res, next) => {
+    try {
+      const profile = await profileService.getProfile(req.userId);
+      res.json({ success: true, data: profile });
+    } catch (err) { next(err); }
+  });
+  
+  // PUT /api/profile
+  router.put('/', [
+    body('age').optional().isInt({ min: 0, max: 120 }).withMessage('Age must be between 0 and 120'),
+    body('name').optional().isLength({ max: 100 }).trim(),
+    body('budget_min').optional().isFloat({ min: 0 }),
+    body('budget_max').optional().isFloat({ min: 0 }),
+  ], async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, error: { errors: errors.array() } });
+    }
+    try {
+      const updated = await profileService.updateProfile(req.userId, req.body);
+      res.json({ success: true, data: updated });
+    } catch (err) { next(err); }
+  });
+  
+  module.exports = router;
+3
+  Step 3: Register in server.js:
+  app.use('/api/profile', require('./routes/profile'));
+4
+  Step 4: Test with Thunder Client
+  GET http://localhost:5000/api/profile with Authorization: Bearer <your_access_token> in the headers.
+  âœ“ Expected result: Returns the user's profile object including the age field.
+[ ]
+DONE WHEN: GET /api/profile returns the user profile including the age field. PUT /api/profile with {"age": 25} updates and returns the profile with the new age.
+24
+Build the image upload middleware and Cloudinary service
+WHY
+Before you can build the wardrobe endpoints, you need a way to handle image uploads. Multer handles the incoming image file. Sharp resizes and compresses it. Cloudinary stores it permanently and gives you back a URL.
+1
+  Step 1: Create middleware/upload.js:
+  const multer = require('multer');
+  
+  // Store files in memory (not disk) so Sharp can process them
+  const storage = multer.memoryStorage();
+  
+  const fileFilter = (req, file, cb) => {
+    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);  // accept the file
+    } else {
+      cb(new Error('Only JPEG, PNG, and WEBP images are accepted.'), false);
+    }
+  };
+  
+  const upload = multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 }  // 5MB max
+  });
+  
+  module.exports = upload;
+2
+  Step 2: Create services/imageService.js:
+  const sharp = require('sharp');
+  const cloudinary = require('cloudinary').v2;
+  const streamifier = require('streamifier');
+  require('dotenv').config();
+  
+  // Configure Cloudinary with your credentials from .env
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key:    process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+  
+  // Step 1: Process image with Sharp (resize + compress)
+  async function processImage(buffer) {
+    return sharp(buffer)
+      .resize(1024, 1024, {
+        fit: 'inside',         // never upscale, just shrink to fit within 1024x1024
+        withoutEnlargement: true
+      })
+      .jpeg({ quality: 85 })  // convert to JPEG at 85% quality
+      .toBuffer();
+  }
+  
+  // Step 2: Upload processed image to Cloudinary
+  async function uploadToCloudinary(buffer, folder) {
+    return new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: `styleai/${folder}`, resource_type: 'image' },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve({ url: result.secure_url, cloudinaryId: result.public_id });
+        }
+      );
+      streamifier.createReadStream(buffer).pipe(stream);
+    });
+  }
+  
+  // Combined: process then upload
+  async function processAndUpload(buffer, folder) {
+    const processed = await processImage(buffer);
+    return uploadToCloudinary(processed, folder);
+  }
+  
+  // Delete an image from Cloudinary (called when user deletes a wardrobe item)
+  async function deleteFromCloudinary(cloudinaryId) {
+    await cloudinary.uploader.destroy(cloudinaryId);
+  }
+  
+  module.exports = { processAndUpload, deleteFromCloudinary };
+3
+  Step 3: Install streamifier
+  This package converts a buffer into a stream for Cloudinary:
+  npm install streamifier
+[ ]
+DONE WHEN: No errors when importing these files. You can test processAndUpload by calling it with a test image buffer.
+IMPORTANT: 
+The Cloudinary credentials in .env must be real values before image upload will work. Sign up at cloudinary.com, go to your Dashboard, and copy Cloud Name, API Key, and API Secret.
+25
+Build the Wardrobe endpoints
+WHY
+These are the endpoints the frontend uses to display the user's closet, add items, edit them, and delete them. Member 3 will also call the wardrobe GET endpoint to fetch items for outfit generation.
+1
+  Step 1: Create services/wardrobeService.js with the core CRUD logic:
+  const pool = require('../db/pool');
+  const imageService = require('./imageService');
+  
+  // GET all items for a user (with optional filters)
+  async function getItems(userId, filters = {}) {
+    let query = `SELECT * FROM wardrobe_items WHERE user_id = $1 AND is_deleted = FALSE`;
+    const values = [userId];
+    let idx = 2;
+  
+    if (filters.category) {
+      query += ` AND category = $${idx++}`;
+      values.push(filters.category);
+    }
+    if (filters.formality_min) {
+      query += ` AND formality_score >= $${idx++}`;
+      values.push(filters.formality_min);
+    }
+  
+    query += ` ORDER BY created_at DESC`;
+  
+    // Pagination
+    const limit = parseInt(filters.limit) || 50;
+    const offset = parseInt(filters.offset) || 0;
+    query += ` LIMIT $${idx++} OFFSET $${idx++}`;
+    values.push(limit, offset);
+  
+    const result = await pool.query(query, values);
+    return result.rows;
+  }
+  
+  // ADD a new item
+  async function addItem(userId, imageBuffer, metadata) {
+    // Upload image to Cloudinary
+    const { url, cloudinaryId } = await imageService.processAndUpload(
+      imageBuffer,
+      `users/${userId}/wardrobe`
+    );
+  
+    const result = await pool.query(`
+      INSERT INTO wardrobe_items
+        (user_id, image_url, cloudinary_id, custom_name, category,
+         subcategory, color_primary, pattern, formality_score,
+         season, material, brand, condition, ai_tags)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+      RETURNING *
+    `, [
+      userId, url, cloudinaryId,
+      metadata.custom_name || null,
+      metadata.category    || null,
+      metadata.subcategory || null,
+      metadata.color_primary || null,
+      metadata.pattern     || null,
+      metadata.formality_score || null,
+      JSON.stringify(metadata.season || []),
+      metadata.material    || null,
+      metadata.brand       || null,
+      metadata.condition   || 'Good',
+      JSON.stringify(metadata.ai_tags || {})
+    ]);
+    return result.rows[0];
+  }
+  
+  // UPDATE item metadata
+  async function updateItem(itemId, userId, data) {
+    // Verify the item belongs to this user
+    const check = await pool.query(
+      'SELECT id FROM wardrobe_items WHERE id = $1 AND user_id = $2 AND is_deleted = FALSE',
+      [itemId, userId]
+    );
+    if (check.rows.length === 0) throw { status: 404, message: 'Item not found.' };
+  
+    const allowed = ['custom_name','category','subcategory','color_primary',
+      'pattern','formality_score','season','material','brand','condition','last_worn'];
+    const updates = [];
+    const values = [];
+    let idx = 1;
+    for (const f of allowed) {
+      if (data[f] !== undefined) {
+        updates.push(`${f} = $${idx++}`);
+        values.push(data[f]);
+      }
+    }
+    if (!updates.length) throw { status: 400, message: 'No valid fields to update.' };
+    values.push(itemId);
+    await pool.query(`UPDATE wardrobe_items SET ${updates.join(',')} WHERE id = $${idx}`, values);
+    const updated = await pool.query('SELECT * FROM wardrobe_items WHERE id = $1', [itemId]);
+    return updated.rows[0];
+  }
+  
+  // SOFT DELETE item
+  async function deleteItem(itemId, userId) {
+    const result = await pool.query(
+      'UPDATE wardrobe_items SET is_deleted = TRUE WHERE id = $1 AND user_id = $2 RETURNING cloudinary_id',
+      [itemId, userId]
+    );
+    if (result.rows.length === 0) throw { status: 404, message: 'Item not found.' };
+    // Optionally: delete the image from Cloudinary
+    // await imageService.deleteFromCloudinary(result.rows[0].cloudinary_id);
+  }
+  
+  module.exports = { getItems, addItem, updateItem, deleteItem };
+2
+  Step 2: Create routes/wardrobe.js and register 4 routes
+  Create the route file following the same pattern as auth.js â€” GET / (list items with filter query params), POST / (upload with multer middleware), PUT /:id, DELETE /:id. Register as app.use('/api/wardrobe', require('./routes/wardrobe')) in server.js.
+3
+  Step 3: Test GET /api/wardrobe (should return empty array for new user)
+  âœ“ Expected result: GET /api/wardrobe with a valid Bearer token returns { success: true, data: [] }.
+[ ]
+DONE WHEN: All 4 wardrobe endpoints return correct responses. GET returns array, POST with an image returns the created item with image_url.
+26
+Build the Outfit endpoints
+WHY
+These endpoints handle saving, rating, and retrieving outfit history. The actual outfit generation logic is built by Member 3 â€” your job is to build the data layer: saving outfits to the database and retrieving them.
+1
+  Step 1: Create routes/outfits.js with these endpoints:
+  // POST /api/outfits/generate   â†’ Member 3 handles the AI logic
+  //                                but the route handler lives here
+  // POST /api/outfits/save       â†’ save an outfit to the DB
+  // GET  /api/outfits/history    â†’ get outfit history with filters
+  // PUT  /api/outfits/:id/rate   â†’ update the rating on an outfit
+  
+  // Example: POST /api/outfits/save
+  router.post('/save', authenticate, async (req, res, next) => {
+    try {
+      const { item_ids, generation_method, mood_tag, rating, notes, worn_date } = req.body;
+  
+      if (!item_ids || !Array.isArray(item_ids) || item_ids.length === 0) {
+        return res.status(400).json({ success: false, error: { message: 'item_ids array is required.' } });
+      }
+  
+      const result = await pool.query(`
+        INSERT INTO outfits (user_id, item_ids, generation_method, mood_tag, rating, notes, worn_date)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *
+      `, [req.userId, item_ids, generation_method || 'prompt', mood_tag, rating, notes, worn_date]);
+  
+      res.status(201).json({ success: true, data: result.rows[0] });
+    } catch (err) { next(err); }
+  });
+  
+  // GET /api/outfits/history (with optional date range and pagination)
+  router.get('/history', authenticate, async (req, res, next) => {
+    try {
+      const { from, to, limit = 20, offset = 0 } = req.query;
+      let query = 'SELECT * FROM outfits WHERE user_id = $1';
+      const values = [req.userId];
+      let idx = 2;
+      if (from) { query += ` AND worn_date >= $${idx++}`; values.push(from); }
+      if (to)   { query += ` AND worn_date <= $${idx++}`; values.push(to); }
+      query += ` ORDER BY created_at DESC LIMIT $${idx++} OFFSET $${idx++}`;
+      values.push(parseInt(limit), parseInt(offset));
+      const result = await pool.query(query, values);
+      res.json({ success: true, data: result.rows });
+    } catch (err) { next(err); }
+  });
+2
+  Step 2: Register in server.js:
+  app.use('/api/outfits', require('./routes/outfits'));
+[ ]
+DONE WHEN: POST /api/outfits/save saves an outfit and returns it. GET /api/outfits/history returns an array (empty at first).
+PHASE 4 â€” Security, Logging & Redis Caching
+Phase 4: Security, Logging & Caching
+A backend that works is not enough â€” it needs to be secure, observable (you can see what's happening), and fast. This phase adds the layers that take your API from 'it works' to 'production ready'.
+27
+Set up Winston structured logging
+WHY
+console.log is fine for development but terrible for production. Winston creates structured log files with log levels (info, warning, error), timestamps, and consistent formatting. When something breaks in production, logs are how you find out what happened.
+1
+  Step 1: Create config/logger.js:
+  const winston = require('winston');
+  
+  const logger = winston.createLogger({
+    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+    format: winston.format.combine(
+      winston.format.timestamp(),
+      winston.format.errors({ stack: true }),
+      winston.format.json()    // structured JSON logs for production
+    ),
+    transports: [
+      // Always log to console
+      new winston.transports.Console({
+        format: winston.format.combine(
+          winston.format.colorize(),
+          winston.format.simple()  // easier to read in development
+        )
+      }),
+      // In production, also write to files
+      ...(process.env.NODE_ENV === 'production' ? [
+        new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+        new winston.transports.File({ filename: 'logs/combined.log' })
+      ] : [])
+    ]
+  });
+  
+  module.exports = logger;
+2
+  Step 2: Replace console.log in your service files
+  Wherever you have console.error or console.log in your service files, import and use the logger instead:
+  const logger = require('../config/logger');
+  
+  // Instead of: console.log('User registered:', userId)
+  logger.info('User registered', { userId });
+  
+  // Instead of: console.error('DB error:', err)
+  logger.error('Database error', { error: err.message, stack: err.stack });
+[ ]
+DONE WHEN: The server starts and logs are formatted with timestamps. An info log and an error log appear in the console.
+28
+Add Redis caching for AI-generated outfit suggestions
+WHY
+Every time a user generates an outfit, your server calls the Gemini API. This is slow (2â€“4 seconds) and uses API credits. If the user generates an outfit with the same mood and the same wardrobe within 6 hours, we can return the cached result instantly instead of calling Gemini again.
+1
+  Step 1: Create services/cacheService.js:
+  const redis = require('../config/redis');
+  const crypto = require('crypto');
+  
+  // Create a unique cache key based on user + mood + their wardrobe content
+  function makeOutfitCacheKey(userId, moodTag, wardrobeItems) {
+    // Hash the wardrobe so the key changes if the wardrobe changes
+    const wardrobeHash = crypto
+      .createHash('md5')
+      .update(JSON.stringify(wardrobeItems.map(i => i.id).sort()))
+      .digest('hex')
+      .slice(0, 8);  // only need first 8 chars
+    return `outfit:${userId}:${moodTag}:${wardrobeHash}`;
+  }
+  
+  // Try to get cached outfits
+  async function getCachedOutfits(userId, moodTag, wardrobeItems) {
+    const key = makeOutfitCacheKey(userId, moodTag, wardrobeItems);
+    const cached = await redis.get(key);
+    return cached ? JSON.parse(cached) : null;
+  }
+  
+  // Save outfits to cache
+  async function cacheOutfits(userId, moodTag, wardrobeItems, outfits) {
+    const key = makeOutfitCacheKey(userId, moodTag, wardrobeItems);
+    const TTL_SECONDS = 6 * 60 * 60;  // 6 hours
+    await redis.setex(key, TTL_SECONDS, JSON.stringify(outfits));
+  }
+  
+  // Invalidate outfit cache when wardrobe changes
+  async function invalidateOutfitCache(userId) {
+    const keys = await redis.keys(`outfit:${userId}:*`);
+    if (keys.length > 0) await redis.del(...keys);
+  }
+  
+  module.exports = { getCachedOutfits, cacheOutfits, invalidateOutfitCache };
+2
+  Step 2: Call invalidateOutfitCache in wardrobeService
+  In wardrobeService.js, after adding, updating, or deleting an item, call:
+  const cache = require('./cacheService');
+  // After any wardrobe change:
+  await cache.invalidateOutfitCache(userId);
+[ ]
+DONE WHEN: The cache service file is created with no errors. Member 3 will integrate getCachedOutfits/cacheOutfits into the outfit generation endpoint.
+29
+Add AI-endpoint rate limiting
+WHY
+AI endpoints are expensive. If someone calls /api/outfits/generate 100 times per minute, your Gemini API bill will spike. A tighter rate limit on AI-specific endpoints protects your usage quota.
+1
+  Step 1: Add this tighter rate limiter to your outfit generation route:
+  const rateLimit = require('express-rate-limit');
+  
+  // Only 10 outfit generations per 15 minutes per IP
+  const aiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: {
+      success: false,
+      error: { message: 'AI generation limit reached. Please wait 15 minutes.' }
+    }
+  });
+  
+  // Apply to the generate endpoint only
+  router.post('/generate', authenticate, aiLimiter, async (req, res, next) => {
+    // ... Member 3's generation logic goes here
+  });
+[ ]
+DONE WHEN: Calling /api/outfits/generate more than 10 times in quick succession returns a 429 Too Many Requests response.
+PHASE 5 â€” Deployment to Production (Railway)
+Phase 5: Deploy Your Backend to Production
+Deployment means making your backend accessible on the internet so the frontend (on Vercel) can call it. Railway is a beginner-friendly hosting platform that makes this straightforward.
+30
+Prepare for deployment â€” add a start script and environment check
+WHY
+Before deploying, you need to make sure your app starts correctly in production (where NODE_ENV=production) and that it fails loudly if any required environment variable is missing â€” rather than silently running broken.
+1
+  Step 1: Create config/env.js (validates all required env vars on startup):
+  require('dotenv').config();
+  
+  const required = [
+    'PORT', 'DATABASE_URL', 'REDIS_URL',
+    'JWT_SECRET', 'JWT_REFRESH_SECRET',
+    'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'
+  ];
+  
+  for (const key of required) {
+    if (!process.env[key]) {
+      console.error(`FATAL: Missing required environment variable: ${key}`);
+      process.exit(1);  // crash immediately with a clear message
+    }
+  }
+  
+  module.exports = {
+    PORT:            process.env.PORT,
+    NODE_ENV:        process.env.NODE_ENV || 'development',
+    DATABASE_URL:    process.env.DATABASE_URL,
+    REDIS_URL:       process.env.REDIS_URL,
+    JWT_SECRET:      process.env.JWT_SECRET,
+    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+  };
+2
+  Step 2: Add 'start' script to package.json:
+  "start": "node server.js"
+3
+  Step 3: Add 'engines' to package.json (tells Railway which Node version to use):
+  "engines": { "node": ">=20.0.0" }
+[ ]
+DONE WHEN: Running NODE_ENV=production npm start with a missing env var logs the FATAL error and exits. With all vars present, it starts normally.
+31
+Deploy to Railway
+WHY
+Railway is a cloud platform that runs your Node.js server and provides managed PostgreSQL and Redis. It connects directly to your GitHub repo and auto-deploys when you push to the main branch.
+1
+  Step 1: Create a Railway account
+  Go to https://railway.app â€” sign up with your GitHub account.
+2
+  Step 2: Create a new project
+  Click 'New Project' â†’ 'Deploy from GitHub repo' â†’ select the styleai repo â†’ select the backend subfolder if prompted.
+3
+  Step 3: Add a PostgreSQL database
+  In your Railway project, click '+ New' â†’ 'Database' â†’ 'Add PostgreSQL'. Railway creates a managed PostgreSQL instance and automatically sets DATABASE_URL in your environment.
+4
+  Step 4: Add a Redis instance
+  Click '+ New' â†’ 'Database' â†’ 'Add Redis'. Railway sets REDIS_URL automatically.
+5
+  Step 5: Add all other environment variables
+  Click on your backend service â†’ 'Variables' tab â†’ add each variable from your .env file one by one (JWT_SECRET, CLOUDINARY keys, GEMINI_API_KEY, FRONTEND_URL, etc.).
+6
+  Step 6: Set the start command
+  In Railway service settings, set Start Command to: npm start
+7
+  Step 7: Run migrations on production
+  In Railway, go to your backend service â†’ open a terminal shell â†’ run:
+  npm run migrate
+  âœ“ Expected result: All 5 migration files run successfully on the production database.
+8
+  Step 8: Get your production URL
+  In Railway, go to your service â†’ Settings â†’ Domains â†’ Generate domain. Your API is now live at something like https://styleai-backend.up.railway.app
+  âœ“ Expected result: Visiting https://your-railway-url.up.railway.app/health in a browser returns { "status": "ok" }.
+[ ]
+DONE WHEN: The /health endpoint returns {status: ok} on your live Railway URL. Share this URL with Member 1 and Member 2 so they can update VITE_API_URL in the frontend.
+PHASE 6 â€” Hackathon-Specific Preparation Checklist
+Phase 6: Hackathon Preparation
+Everything in Phases 0â€“5 should be done BEFORE the hackathon. This phase is a final pre-flight checklist and your personal plan for the 24 hours.
+32
+Pre-hackathon checklist â€” everything to verify the night before
+WHY
+Arriving at the hackathon with a broken environment is a disaster. Run through this entire checklist the night before.
+1
+  npm run dev starts the server with no errors locally
+  âœ“ Expected result: Console shows PostgreSQL, Redis, and 'Server running' messages.
+2
+  npm run migrate runs all 5 migrations cleanly on local DB
+  âœ“ Expected result: Logs show all 5 files as 'DONE'.
+3
+  npm run seed creates 3 test users
+  âœ“ Expected result: TablePlus shows 3 rows in the users table.
+4
+  POST /api/auth/register works (tested with Thunder Client)
+  âœ“ Expected result: Returns 201 with accessToken and refreshToken.
+5
+  POST /api/auth/login works with the seeded test user
+  âœ“ Expected result: Returns 200 with tokens.
+6
+  GET /api/profile with a valid Bearer token returns user data including age
+  âœ“ Expected result: Returns profile object with age field.
+7
+  POST /api/wardrobe/items with an image file creates a new wardrobe item with Cloudinary URL
+  âœ“ Expected result: Returns 201 with image_url pointing to cloudinary.com.
+8
+  Railway production URL /health returns { status: ok }
+  âœ“ Expected result: Confirmed in browser.
+9
+  Production DB migrations have run (check via TablePlus connected to Railway DB)
+  âœ“ Expected result: All 7 tables exist in production.
+10
+  All environment variables are set in Railway (double-check every single one)
+  âœ“ Expected result: Railway Variables tab shows all required keys.
+[ ]
+DONE WHEN: All 10 checks pass. You are ready for the hackathon.
+33
+Your 24-hour hackathon execution plan
+WHY
+During the hackathon, work in this order. Do not jump ahead â€” each block unblocks the next team member.
+1
+  Step 1: Hour 0â€“1: Environment
+  docker compose up -d locally. Confirm Railway is live. Share production URL with team. Confirm Member 3 can call your /health endpoint from their machine.
+2
+  Step 2: Hour 1â€“2: Migrations on production
+  SSH into Railway and run npm run migrate on production. Confirm all tables exist. Run npm run seed on production to create the demo account.
+3
+  Step 3: Hour 2â€“3: Auth live
+  Deploy the auth routes to production. Test register + login on the live URL with Postman. Share the test account credentials with the whole team.
+4
+  Step 4: Hour 3â€“4: Profile endpoints live
+  Deploy profile routes. Test GET and PUT /api/profile including age. Confirm Member 2 can call it from the frontend.
+5
+  Step 5: Hour 4â€“6: Wardrobe endpoints live
+  Deploy wardrobe routes. Test image upload to Cloudinary on the live server. Confirm Member 1 can display items from the API.
+6
+  Step 6: Hour 6â€“8: Outfit history endpoints live
+  Deploy outfit save + history + rating endpoints. Confirm Member 2 can save and retrieve outfits.
+7
+  Step 7: Hour 8â€“10: Support Member 3
+  Member 3 is building outfit generation endpoints. Help them with any database query issues. Add any missing DB queries they need.
+8
+  Step 8: Hour 10â€“14: Support remaining endpoints
+  Help deploy Rate My Fit and Shopping recommendation endpoints as Member 3 finishes them. Fix any database-level bugs that surface.
+9
+  Step 9: Hour 14â€“18: Performance & monitoring
+  Add Redis caching calls. Check Railway logs for any errors. Run EXPLAIN ANALYZE on slow queries in TablePlus.
+10
+  Step 10: Hour 18â€“22: QA support
+  Monitor production logs during full-team QA. Fix any backend errors immediately. Verify demo account has a full wardrobe.
+11
+  Step 11: Hour 22â€“24: Final stability
+  No new DB schema changes. Monitor Railway logs. Ensure the demo account is perfect. Confirm all endpoints return correct status codes.
+[ ]
+DONE WHEN: At Hour 24, all backend endpoints are live, stable, and returning correct responses on the production Railway URL.
+QUICK REFERENCE â€” Commands, Endpoints & Troubleshooting
+Quick Reference Cheat Sheet
+Essential Commands
+Command
+What it does
+npm run dev
+Start backend server with auto-restart on save
+npm run migrate
+Run all pending database migrations
+npm run seed
+Create test users and sample data
+docker compose up -d
+Start PostgreSQL and Redis in background
+docker compose down
+Stop PostgreSQL and Redis
+docker compose ps
+Check if containers are running
+docker compose logs postgres
+See PostgreSQL logs if connection fails
+All Your API Endpoints at a Glance
+Auth?
+Endpoint
+Purpose
+No
+POST /api/auth/register
+Register a new user
+No
+POST /api/auth/login
+Log in, receive tokens
+No
+POST /api/auth/refresh
+Get a new access token using refresh token
+No
+POST /api/auth/logout
+Invalidate refresh token
+Yes
+GET /api/profile
+Get full user profile (includes age)
+Yes
+PUT /api/profile
+Update profile fields including age
+Yes
+POST /api/profile/analyze-selfie
+Upload selfie â†’ Gemini analysis â†’ update profile
+Yes
+GET /api/wardrobe/items
+List wardrobe items (with optional filters)
+Yes
+POST /api/wardrobe/items
+Upload a new clothing item (image + metadata)
+Yes
+PUT /api/wardrobe/items/:id
+Edit a wardrobe item's metadata
+Yes
+DELETE /api/wardrobe/items/:id
+Soft-delete a wardrobe item
+Yes
+POST /api/outfits/save
+Save a generated outfit
+Yes
+GET /api/outfits/history
+Get outfit history (paginated)
+Yes
+PUT /api/outfits/:id/rate
+Rate a saved outfit (1â€“5 stars)
+Common Errors & How to Fix Them
+Error message
+Fix
+ECONNREFUSED 5432
+PostgreSQL is not running. Run: docker compose up -d
+ECONNREFUSED 6379
+Redis is not running. Run: docker compose up -d
+Cannot find module './config/redis'
+You have not created config/redis.js yet â€” see Task 20
+JsonWebTokenError: invalid signature
+JWT_SECRET in .env does not match the one used to sign the token â€” restart the server after changing .env
+Error: LIMIT_FILE_SIZE
+Uploaded image is over 5MB. Tell the user to upload a smaller image.
+duplicate key value violates unique constraint
+Trying to register an email that already exists â€” return 409 Conflict to the user
+invalid input value for enum item_category
+Frontend sent a category value not in the ENUM list â€” check the exact allowed values in migration 003
+relation 'users' does not exist
+Migrations have not been run. Run: npm run migrate
+StyleAI  |  Member 4 â€” Major Backend Guide  |  Web App v1.0  |  Confidential
